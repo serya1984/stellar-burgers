@@ -17,12 +17,7 @@ import { useEffect } from 'react';
 import { Preloader } from '@ui';
 import { useDispatch, useSelector } from '../../../src/services/store';
 import { getIngredients } from '../../../src/services/ingridients/actions';
-import {
-  selectError,
-  selectIsLoading
-} from '../../../src/services/ingridients/slices';
 import { getFeed } from '../../../src/services/feed/actions';
-import { getOrderData } from 'src/services/order/slices';
 import { checkUserAuth } from '../../../src/services/user/action';
 import { ProtectedRoute } from './protected-route';
 
