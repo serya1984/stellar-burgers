@@ -1,8 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { TOrder } from '@utils-types';
 import { orderAction } from './actions';
-import { useDispatch } from '../store';
-import { clearConstructor } from '../constructorIngridients/constructorSlices';
 
 export type TOrderState = {
   orderData: TOrder | null;
