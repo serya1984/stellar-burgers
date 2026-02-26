@@ -12,6 +12,8 @@ import {
   resetOrderData
 } from '../../../src/services/order/slices';
 import { orderAction } from '../../../src/services/order/actions';
+import { useNavigate } from 'react-router-dom';
+import { selectUser } from '../../../src/services/user/slice';
 
 export const BurgerConstructor: FC = () => {
   /** TODO: взять переменные constructorItems, orderRequest и orderModalData из стора */
@@ -20,8 +22,15 @@ export const BurgerConstructor: FC = () => {
   const constructorItems = selector(getConstructorItems);
   const orderRequest = selector(getOrderRequest);
   const orderModalData = selector(getOrderData);
+  const navigate = useNavigate();
+  const user = selector(selectUser);
 
   const onOrderClick = () => {
+    if (!user) {
+      navigate('/login');
+      return;
+    }
+
     if (!constructorItems.bun || orderRequest) return;
     const ingredientIds = [
       constructorItems.bun._id,

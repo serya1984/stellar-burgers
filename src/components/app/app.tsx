@@ -15,7 +15,7 @@ import { Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 import { AppHeader, IngredientDetails, Modal, OrderInfo } from '@components';
 import { useEffect } from 'react';
 import { Preloader } from '@ui';
-import { useDispatch, useSelector } from '../../../src/services/store';
+import { useDispatch } from '../../../src/services/store';
 import { getIngredients } from '../../../src/services/ingridients/actions';
 import { getFeed } from '../../../src/services/feed/actions';
 import { checkUserAuth } from '../../../src/services/user/action';
@@ -59,7 +59,7 @@ const App = () => {
             />
             <Route
               path='/register'
-              element={<ProtectedRoute component={<Register />} />}
+              element={<ProtectedRoute onlyUnAuth component={<Register />} />}
             />
             <Route
               path='/forgot-password'
@@ -84,7 +84,10 @@ const App = () => {
             <Route path='*' element={<NotFound404 />} />
             <Route path='/ingredients/:id' element={<IngredientDetails />} />
             <Route path='/feed/:number' element={<OrderInfo />} />
-            <Route path='/profile/orders/:number' element={<OrderInfo />} />
+            <Route
+              path='/profile/orders/:number'
+              element={<ProtectedRoute component={<OrderInfo />} />}
+            />
           </Routes>
 
           {background && (
