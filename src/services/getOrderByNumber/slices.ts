@@ -13,9 +13,6 @@ export const getOrderByNumberSlice = createSlice({
   name: 'getOrderByNumber',
   initialState,
   reducers: {
-    setOrderByNumber: (state, action: PayloadAction<TOrder>) => {
-      state.orderData = action.payload;
-    },
     resetOrderByNumberData: (state) => {
       state.orderData = null;
       state.request = false;
@@ -42,6 +39,8 @@ export const getOrderByNumberSlice = createSlice({
   }
 });
 
-export const { setOrderByNumber, resetOrderByNumberData } =
-  getOrderByNumberSlice.actions;
+export const { resetOrderByNumberData } = getOrderByNumberSlice.actions;
+export const orderByNumber = (state: { order: TOrderState }) => {
+  state.order.orderData;
+};
 export default getOrderByNumberSlice.reducer;

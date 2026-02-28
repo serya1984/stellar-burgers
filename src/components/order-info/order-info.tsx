@@ -6,15 +6,29 @@ import { useSelector } from '../../../src/services/store';
 import { getOrderData } from '../../../src/services/order/slices';
 import { selectorIngridients } from '../../../src/services/ingridients/slices';
 import { useParams } from 'react-router-dom';
-import { selectOrderById } from '../../../src/services/feed/slices';
+import {
+  selectOrderById,
+  selectorOrders
+} from '../../../src/services/feed/slices';
+import { orderByNumber } from '../../../src/services/getOrderByNumber/slices';
+import { getOrdersInfo } from '../../../src/services/getOrders/slices';
 
 export const OrderInfo: FC = () => {
   const { number } = useParams<{ number: string | undefined }>();
   const selector = useSelector();
-  const orderData =
-    number === undefined
-      ? selector(getOrderData)
-      : selector(selectOrderById(number));
+  const feedOrders = selector(selectorOrders);
+  const userOrders = selector(getOrdersInfo);
+  const orderFromNumber = selector(orderByNumber);
+  const orderData = useMemo(() => {
+    if (!number) return orderFromNumber;
+
+    return (
+      feedOrders.find((order) => order.number === Number(number)) ||
+      userOrders.find((order) => order.number === Number(number)) ||
+      orderFromNumber
+    );
+  }, [number, feedOrders, userOrders, orderFromNumber]);
+
   const ingredients: TIngredient[] = selector(selectorIngridients);
   /** TODO: взять переменные orderData и ingredients из стора */
   /* Готовим данные для отображения */
