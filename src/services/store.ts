@@ -15,7 +15,7 @@ import { ProfileUserSlice } from './profile/slice';
 import { getOrderSlice } from './getOrders/slices';
 import { getOrderByNumberSlice } from './getOrderByNumber/slices';
 
-const rootReducer = combineSlices({
+export const rootReducer = combineSlices({
   ingridients: ingridientsSlice.reducer,
   items: constructorSlice.reducer,
   feed: feedSlice.reducer,
