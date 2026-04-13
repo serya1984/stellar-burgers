@@ -1,13 +1,9 @@
 import { ingridientsSlice } from '../services/ingridients/slices';
 import { getIngredients } from '../services/ingridients/actions';
-import { get } from 'http';
+import { initialState } from '../services/ingridients/slices';
 
 describe('тест редьюсера слайса ingridients', () => {
-  const initialState = {
-    ingridients: [],
-    isLoading: false,
-    error: null
-  };
+
   it('тест установки isLoading=true при getIngredients.pending', () => {
     const action = { type: getIngredients.pending.type };
     const store = ingridientsSlice.reducer(initialState, action);

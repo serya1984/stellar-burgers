@@ -1,6 +1,13 @@
 /// <reference types="cypress" />
 
 describe('тесты для страницы конструктора бургера', () => {
+  const testUrl = 'http://localhost:4000/';
+  const selectorIngredient = 'data-cy^="ingredient-item-';
+  const modalWindowSelector = '[data-cy="modal-window"]';
+  const buttonCloseSelector = '[data-cy="button-close"]';
+  const topBunSelector = '[data-cy="topBun"]';
+  const bottomBunSelector = '[data-cy="bottomBun"]';
+  const fillingSelector = '[data-cy="filling"]';
   it('тест возврата фиктивных данных для тестового запроса', () => {
     cy.fixture('ingredients.json').then((mockIngredients) => {
       cy.intercept('GET', '**/api/ingredients', {
@@ -8,14 +15,15 @@ describe('тесты для страницы конструктора бурге
         body: mockIngredients
       }).as('getIngredients');
 
-      cy.visit('http://localhost:4000');
+      cy.visit(testUrl);
       cy.wait('@getIngredients');
 
-      cy.get('[data-cy^="ingredient-item-"]').should(
+
+      cy.get(`[${selectorIngredient}"]`).should(
         'have.length',
         mockIngredients.data.length
       );
-      cy.get('[data-cy="ingredient-item-2"]').should(
+      cy.get(`[${selectorIngredient}2"]`).should(
         'contain.text',
         'Флюоресцентная булка R2-D3'
       );
@@ -28,36 +36,36 @@ describe('тесты для страницы конструктора бурге
         body: mockIngredients
       }).as('getIngredients');
 
-      cy.visit('http://localhost:4000');
+      cy.visit(testUrl);
       cy.wait('@getIngredients');
 
-      cy.get('[data-cy="ingredient-item-2"]')
+      cy.get(`[${selectorIngredient}2"]`)
         .should('contain.text', 'Флюоресцентная булка R2-D3')
         .contains('Добавить')
         .click();
-      cy.get('[data-cy="topBun"]').should(
+      cy.get(topBunSelector).should(
         'contain.text',
         'Флюоресцентная булка R2-D3 (верх)'
       );
-      cy.get('[data-cy="bottomBun"]').should(
+      cy.get(bottomBunSelector).should(
         'contain.text',
         'Флюоресцентная булка R2-D3 (низ)'
       );
 
-      cy.get('[data-cy="ingredient-item-3"]')
-        .should('contain.text', 'Филе Люминесцентного тетраодонтимформа')
+      cy.get(`[${selectorIngredient}3"]`)
+        .should('contain.text', "Филе Люминесцентного тетраодонтимформа")
         .contains('Добавить')
         .click();
-      cy.get('[data-cy="filling"]').should(
+      cy.get(fillingSelector).should(
         'contain.text',
         'Филе Люминесцентного тетраодонтимформа'
       );
 
-      cy.get('[data-cy="ingredient-item-5"]')
+      cy.get(`[${selectorIngredient}5"]`)
         .should('contain.text', 'Соус Spicy-X')
         .contains('Добавить')
         .click();
-      cy.get('[data-cy="filling"]').should('contain.text', 'Соус Spicy-X');
+      cy.get(fillingSelector).should('contain.text', 'Соус Spicy-X');
     });
   });
   it('тест работы модальных окон', () => {
@@ -68,28 +76,28 @@ describe('тесты для страницы конструктора бурге
       }).as('getIngredients');
     });
 
-    cy.visit('http://localhost:4000/');
+    cy.visit(testUrl);
     cy.wait('@getIngredients');
 
-    cy.get('[data-cy="ingredient-item-1"]')
+    cy.get(`[${selectorIngredient}1"]`)
       .should('contain.text', 'Краторная булка N-200i')
       .click();
-    cy.get('[data-cy="modal-window"]').should(
+    cy.get(modalWindowSelector).should(
       'contain.text',
       'Детали ингредиента'
     );
-    cy.get('[data-cy="button-close"]').should('be.visible').click();
-    cy.get('[data-cy="modal-window"]').should('not.exist');
+    cy.get(buttonCloseSelector).should('be.visible').click();
+    cy.get(modalWindowSelector).should('not.exist');
 
-    cy.get('[data-cy="ingredient-item-1"]')
+    cy.get(`[${selectorIngredient}1"]`)
       .should('contain.text', 'Краторная булка N-200i')
       .click();
-    cy.get('[data-cy="modal-window"]').should(
+    cy.get(modalWindowSelector).should(
       'contain.text',
       'Детали ингредиента'
     );
     cy.get('[data-cy="overlay"]').click({ force: true });
-    cy.get('[data-cy="modal-windiw"]').should('not.exist');
+    cy.get(modalWindowSelector).should('not.exist');
   });
 
   it('тест создания заказа', () => {
@@ -179,34 +187,34 @@ describe('тесты для страницы конструктора бурге
 
     cy.setCookie('accessToken', 'Bearer test-token');
 
-    cy.visit('http://localhost:4000/');
+    cy.visit(testUrl);
     cy.wait('@getUser');
     cy.wait('@getIngredients');
 
-    cy.get('[data-cy="ingredient-item-1"]').contains('Добавить').click();
-    cy.get('[data-cy="ingredient-item-3"]').contains('Добавить').click();
+    cy.get(`[${selectorIngredient}1"]`).contains('Добавить').click();
+    cy.get(`[${selectorIngredient}3"]`).contains('Добавить').click();
     cy.get('[data-cy="orderButton"]').click();
     cy.wait('@createOrder');
 
     cy.get('body').then(($body) => {
-      if ($body.find('[data-cy="modal-window"]').length > 0) {
+      if ($body.find(modalWindowSelector).length > 0) {
         cy.log('Модальное окно найдено');
       } else {
         cy.log('Модальное окно не найдено!');
       }
     });
 
-    cy.get('[data-cy="modal-window"]', { timeout: 10000 })
+    cy.get(modalWindowSelector, { timeout: 10000 })
       .should('contain.text', '103870')
       .and('be.visible');
 
-    cy.get('[data-cy="button-close"]').should('be.visible').click();
-    cy.get('[data-cy="modal-window"]').should('not.exist');
+    cy.get(buttonCloseSelector).should('be.visible').click();
+    cy.get(modalWindowSelector).should('not.exist');
 
     cy.get('[data-cy="constructor-price"]').should('have.text', '0');
 
-    cy.get('[data-cy="topBun"]').should('not.exist');
-    cy.get('[data-cy="bottomBun"]').should('not.exist');
-    cy.get('[data-cy="filling"]').should('not.exist');
+    cy.get(topBunSelector).should('not.exist');
+    cy.get(bottomBunSelector).should('not.exist');
+    cy.get(fillingSelector).should('not.exist');
   });
 });

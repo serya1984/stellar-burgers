@@ -4,22 +4,13 @@ import constructorSlice, {
   moveIngredient,
   TConstructorState
 } from '../services/constructorIngridients/constructorSlices';
+import { initialState } from '../services/constructorIngridients/constructorSlices';
 
 describe('тест редьюсера слайса burgerConstructor', () => {
-  let initialState: TConstructorState = {
-    items: {
-      bun: null,
-      ingredients: []
-    }
-  };
+
 
   beforeEach(() => {
-    initialState = {
-      items: {
-        bun: null,
-        ingredients: []
-      }
-    };
+    initialState
   });
 
   const ingredients = [
