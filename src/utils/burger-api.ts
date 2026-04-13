@@ -1,12 +1,12 @@
-import { setCookie, getCookie } from './cookie';
-import { TIngredient, TOrder, TOrdersData, TUser } from './types';
+import { setCookie, getCookie, deleteCookie } from './cookie';
+import { TIngredient, TOrder, TUser } from './types';
 
 const URL = process.env.BURGER_API_URL;
 
 const checkResponse = <T>(res: Response): Promise<T> =>
   res.ok ? res.json() : res.json().then((err) => Promise.reject(err));
 
-type TServerResponse<T> = {
+export type TServerResponse<T> = {
   success: boolean;
 } & T;
 
@@ -25,6 +25,15 @@ export const refreshToken = (): Promise<TRefreshResponse> =>
       token: localStorage.getItem('refreshToken')
     })
   })
+    .catch((err) => {
+      const error = err as { statusCode: number };
+      if (error.statusCode === 401 || error.statusCode === 403) {
+        localStorage.removeItem('refreshToken');
+        deleteCookie('accessToken');
+        window.location.reload();
+      }
+      return Promise.reject(err);
+    })
     .then((res) => checkResponse<TRefreshResponse>(res))
     .then((refreshData) => {
       if (!refreshData.success) {
@@ -43,7 +52,13 @@ export const fetchWithRefresh = async <T>(
     const res = await fetch(url, options);
     return await checkResponse<T>(res);
   } catch (err) {
-    if ((err as { message: string }).message === 'jwt expired') {
+    const error = err as { statusCode: number };
+    console.log('Error in fetchWithRefresh:', error);
+    if (
+      (err as { message: string }).message === 'jwt expired' ||
+      error.statusCode === 401 ||
+      error.statusCode === 403
+    ) {
       const refreshData = await refreshToken();
       if (options.headers) {
         (options.headers as { [key: string]: string }).authorization =
@@ -137,7 +152,7 @@ export type TRegisterData = {
   password: string;
 };
 
-type TAuthResponse = TServerResponse<{
+export type TAuthResponse = TServerResponse<{
   refreshToken: string;
   accessToken: string;
   user: TUser;
@@ -204,7 +219,7 @@ export const resetPasswordApi = (data: { password: string; token: string }) =>
       return Promise.reject(data);
     });
 
-type TUserResponse = TServerResponse<{ user: TUser }>;
+export type TUserResponse = TServerResponse<{ user: TUser }>;
 
 export const getUserApi = () =>
   fetchWithRefresh<TUserResponse>(`${URL}/auth/user`, {
@@ -233,3 +248,6 @@ export const logoutApi = () =>
       token: localStorage.getItem('refreshToken')
     })
   }).then((res) => checkResponse<TServerResponse<{}>>(res));
+
+export const isTokenExists =
+  getCookie('accessToken') !== null && getCookie('accessToken') !== undefined;

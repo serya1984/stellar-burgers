@@ -1,4 +1,5 @@
 export type TIngredient = {
+  [x: string]: any;
   _id: string;
   name: string;
   type: string;
@@ -10,6 +11,12 @@ export type TIngredient = {
   image: string;
   image_large: string;
   image_mobile: string;
+};
+
+export type TFeed = {
+  orders: TOrder[];
+  total: number;
+  totalToday: number;
 };
 
 export type TConstructorIngredient = TIngredient & {
@@ -33,6 +40,7 @@ export type TOrdersData = {
 };
 
 export type TUser = {
+  id: string;
   email: string;
   name: string;
 };
